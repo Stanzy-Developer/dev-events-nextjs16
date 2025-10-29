@@ -1,17 +1,8 @@
 /* eslint-disable prefer-const */
 import mongoose from 'mongoose';
 
-// Define the MongoDB connection string type
-type ConnectionString = string;
 
-// Check if MONGODB_URI exists in environment variables
-const MONGODB_URI: ConnectionString = process.env.MONGODB_URI as string;
-
-if (!MONGODB_URI) {
-  throw new Error(
-    'Please define the MONGODB_URI environment variable inside .env.local'
-  );
-}
+const MONGODB_URI = process.env.MONGODB_URI as string;
 
 /**
  * Global interface to cache the mongoose connection across hot reloads in development.
@@ -46,9 +37,15 @@ async function connectDB(): Promise<typeof mongoose> {
     return cached.conn;
   }
 
+  if (!MONGODB_URI) {
+    throw new Error(
+      'Please define the MONGODB_URI environment variable inside .env.local'
+    );
+  }
+
   // Return existing connection promise if one is in progress
   if (!cached.promise) {
-    const opts = {
+    const opts: Parameters<typeof mongoose.connect>[1] = {
       bufferCommands: false, // Disable Mongoose buffering to fail fast if connection is not ready
       maxPoolSize: 10, // Maximum number of connections in the pool
       minPoolSize: 2, // Minimum number of connections in the pool

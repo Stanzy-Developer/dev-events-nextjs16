@@ -1,6 +1,5 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
-// TypeScript interface for Event document
 export interface IEvent extends Document {
   title: string;
   slug: string;
@@ -20,7 +19,6 @@ export interface IEvent extends Document {
   updatedAt: Date;
 }
 
-// Event schema definition
 const EventSchema = new Schema<IEvent>(
   {
     title: {
@@ -30,9 +28,10 @@ const EventSchema = new Schema<IEvent>(
     },
     slug: {
       type: String,
-      unique: true,
+      required: [true, 'Event slug is required'],
+      immutable: true,
       lowercase: true,
-      trim: true,
+     trim: true,
     },
     description: {
       type: String,
@@ -116,7 +115,7 @@ EventSchema.pre('save', async function (next) {
   const event = this as IEvent;
 
   // Generate slug only if title is new or modified
-  if (event.isModified('title')) {
+  if (event.isNew) {
     event.slug = generateSlug(event.title);
   }
 
