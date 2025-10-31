@@ -9,6 +9,11 @@ export const getSimilarEventsBySlug = async (slug: string) => {
 
     const event = await Event.findOne({ slug });
 
+    // Return empty array if event not found
+    if (!event) {
+      return [];
+    }
+
     return await Event.find({ _id: { $ne: event._id }, tags: { $in: event.tags } }).lean()
     
   } catch {
