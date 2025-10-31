@@ -5,9 +5,14 @@ import { cacheLife } from "next/cache";
 import { notFound } from "next/navigation";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+
+if (!BASE_URL) {
+  throw new Error("NEXT_PUBLIC_BASE_URL is not defined");
+}
+
 export default async function Home() {
   "use cache";
-  cacheLife('hours')
+  cacheLife("hours");
   const response = await fetch(`${BASE_URL}/api/events`);
 
   if (!response.ok) {
